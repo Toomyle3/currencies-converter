@@ -7,6 +7,13 @@
       href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <style>
       body {
         height: 100vh;
@@ -84,6 +91,20 @@
           color: aqua;
         }
       }
+      .swap-button {
+        font-size: 40px;
+        margin-bottom: 45px;
+        font-weight: 600;
+        color: black;
+        cursor: pointer;
+        &:hover {
+          color: rgb(0, 119, 255);
+          font-size: 40px;
+          margin-bottom: 45px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+      }
     </style>
   </head>
   <body>
@@ -91,27 +112,48 @@
       <h1 style="color: #ffffff">Currencies converter</h1>
     </div>
     <div class="container">
-      <div class="input-container">
-        <div class="input-inner">
-          <label class="title">Convert from: </label>
-          <select
-            disabled
-            id="currency-select-from"
-            placeholder="Name"
-          ></select>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+        "
+      >
+        <div class="input-container">
+          <div class="input-inner">
+            <label class="title">Convert from: </label>
+            <select
+              disabled
+              id="currency-select-from"
+              placeholder="Name"
+            ></select>
+          </div>
+          <div class="input-inner">
+            <label class="title">Convert to: </label>
+            <select
+              disabled
+              id="currency-select-to"
+              placeholder="Name"
+            ></select>
+          </div>
+          <div class="input-inner">
+            <label class="title"> Currency amount: </label>
+            <input id="currency-amount" type="text" placeholder="Amount" />
+          </div>
         </div>
-        <div class="input-inner">
-          <label class="title">Convert to: </label>
-          <select disabled id="currency-select-to" placeholder="Name"></select>
-        </div>
-        <div class="input-inner">
-          <label class="title"> Currency amount: </label>
-          <input id="currency-amount" type="text" placeholder="Amount" />
+        <div>
+          <i
+            onclick="handleSwapCurrencies()"
+            class="fa fa-retweet swap-button"
+            aria-hidden="true"
+          ></i>
         </div>
       </div>
     </div>
     <div class="button-group">
       <div
+        class="swap-button"
         style="
           display: flex;
           flex-direction: row;
@@ -226,6 +268,14 @@
             messageDiv.innerHTML = message;
             messageDiv.style.color = "green";
           });
+      };
+
+      const handleSwapCurrencies = () => {
+        const selectElement1 = document.getElementById("currency-select-from");
+        const selectElement2 = document.getElementById("currency-select-to");
+        const tempValue = selectElement1.value;
+        $("#currency-select-from").val(selectElement2.value).trigger("change");
+        $("#currency-select-to").val(tempValue).trigger("change");
       };
 
       const initialize = () => {
