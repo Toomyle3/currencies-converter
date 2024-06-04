@@ -8,6 +8,13 @@
       rel="stylesheet"
     />
     <style>
+      body {
+        height: 100vh;
+        background: url("https://images.unsplash.com/photo-1593672715438-d88a70629abe?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+          no-repeat left top;
+        background-size: cover;
+        overflow: hidden;
+      }
       .container {
         display: flex;
         justify-content: center;
@@ -20,7 +27,7 @@
         margin-top: 10%;
       }
       input[type="text"] {
-        width: 162px;
+        width: 262px;
         height: 40px;
         padding: 0px 18px;
         border: 1px solid #ddd;
@@ -31,22 +38,24 @@
       }
       .title {
         padding-right: 10px;
+        color: #ffffff;
       }
       .input-container {
         display: flex;
         justify-content: space-between;
         flex-direction: column;
-        width: 350px;
+        width: 450px;
         gap: 10px;
       }
       .select2 {
-        width: 200px !important;
+        width: 300px !important;
         height: 40px !important;
         padding: 0px 10px !important;
         border: 1px solid #ddd !important;
         border-radius: 5px !important;
         display: flex !important;
         align-items: center !important;
+        background-color: #ffffff;
       }
       .select2-selection {
         border: none !important;
@@ -79,7 +88,7 @@
   </head>
   <body>
     <div class="container2">
-      <h1>Currencies converter</h1>
+      <h1 style="color: #ffffff">Currencies converter</h1>
     </div>
     <div class="container">
       <div class="input-container">
@@ -108,12 +117,14 @@
           flex-direction: row;
           align-items: center;
           gap: 20px;
+          font-size: larger;
+          font-weight: 700;
+          color: rgb(29, 61, 61);
         "
       >
         Equal to:
         <div class="message" id="message"></div>
       </div>
-
       <button onclick="convertCurrency()">Convert</button>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -213,6 +224,7 @@
             const message = `${formattedData} ${selectedCurrency} ${currencyName}`;
 
             messageDiv.innerHTML = message;
+            messageDiv.style.color = "green";
           });
       };
 
