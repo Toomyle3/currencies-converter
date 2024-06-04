@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10%;
+      }
+      input[type="text"] {
+        width: 162px;
+        height: 40px;
+        padding: 0px 18px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input[type="text"]:focus {
+        outline: none;
+      }
+      .title {
+        padding-right: 10px;
+      }
+      .input-container {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        width: 350px;
+        gap: 10px;
+      }
+      .select2 {
+        width: 200px !important;
+        height: 40px !important;
+        padding: 0px 10px !important;
+        border: 1px solid #ddd !important;
+        border-radius: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+      .select2-selection {
+        border: none !important;
+      }
+      .input-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        padding: 50px 0px;
+        gap: 20px;
+      }
+      button {
+        height: 40px;
+        width: 100px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+          border: 1px solid aqua;
+          color: aqua;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container2">
+      <h1>Currencies converter</h1>
+    </div>
+    <div class="container">
+      <div class="input-container">
+        <div class="input-inner">
+          <label class="title">Convert from: </label>
+          <select
+            disabled
+            id="currency-select-from"
+            placeholder="Name"
+          ></select>
+        </div>
+        <div class="input-inner">
+          <label class="title">Convert to: </label>
+          <select disabled id="currency-select-to" placeholder="Name"></select>
+        </div>
+        <div class="input-inner">
+          <label class="title"> Currency amount: </label>
+          <input id="currency-amount" type="text" placeholder="Amount" />
+        </div>
+      </div>
+    </div>
+    <div class="button-group">
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+        "
+      >
+        Equal to:
+        <div class="message" id="message"></div>
+      </div>
+
+      <button onclick="convertCurrency()">Convert</button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+      let currenciesList = [];
+      const getAllCurrencies = async () => {
+        await fetch("/get-currencies", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            currenciesList = data.results;
+            populateCurrencySelect(currenciesList);
+          });
+      };
+
+      const populateCurrencySelect = (currencies) => {
+        const selectElement1 = document.getElementById("currency-select-from");
+        const selectElement2 = document.getElementById("currency-select-to");
+
+        const result = Object.keys(currencies).map((key) => currencies[key]);
+
+        // Clear existing options
+        selectElement1.innerHTML = "";
+        selectElement2.innerHTML = "";
+
+        // Add the placeholder option
+        const placeholderOption1 = document.createElement("option");
+        placeholderOption1.value = "";
+        placeholderOption1.textContent = "Select currency";
+        selectElement1.appendChild(placeholderOption1);
+
+        const placeholderOption2 = document.createElement("option");
+        placeholderOption2.value = "";
+        placeholderOption2.textContent = "Select currency";
+        selectElement2.appendChild(placeholderOption2);
+
+        result.forEach((currency) => {
+          const option1 = document.createElement("option");
+          option1.value = currency.id;
+          option1.textContent = `${currency.currencySymbol ?? currency.id} - ${
+            currency.id
+          } - ${currency.currencyName}`;
+          selectElement1.appendChild(option1);
+
+          const option2 = document.createElement("option");
+          option2.value = currency.id;
+          option2.textContent = `${currency.currencySymbol ?? currency.id} - ${
+            currency.id
+          } - ${currency.currencyName}`;
+          selectElement2.appendChild(option2);
+        });
+
+        if (result.length > 0) {
+          selectElement1.disabled = false;
+          selectElement2.disabled = false;
+        } else {
+          selectElement1.disabled = true;
+          selectElement2.disabled = true;
+        }
+
+        $(selectElement1).select2();
+        $(selectElement2).select2();
+      };
+
+      function formatMoney(amount) {
+        const parts = amount.toFixed(2).split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return parts.join(",");
+      }
+      const convertCurrency = async () => {
+        await fetch("/currencies-convert", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: document.getElementById("currency-select-from").value,
+            to: document.getElementById("currency-select-to").value,
+            amount: document.getElementById("currency-amount").value,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const formattedData = formatMoney(parseFloat(data));
+
+            const messageDiv = document.getElementById("message");
+            const currencySelectTo =
+              document.getElementById("currency-select-to");
+
+            const selectedCurrency = currencySelectTo.value;
+            const currencyName = currenciesList[selectedCurrency].currencyName;
+            const message = `${formattedData} ${selectedCurrency} ${currencyName}`;
+
+            messageDiv.innerHTML = message;
+          });
+      };
+
+      const initialize = () => {
+        getAllCurrencies();
+      };
+
+      window.addEventListener("load", initialize);
+    </script>
+  </body>
+</html>
