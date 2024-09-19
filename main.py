@@ -10,6 +10,7 @@ endpoint = f'api/v7/currencies?apiKey={secret_key}'
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     return send_from_directory(os.getcwd(), 'index.html')
